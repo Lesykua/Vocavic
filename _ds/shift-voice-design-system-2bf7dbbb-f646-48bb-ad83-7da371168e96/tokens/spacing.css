@@ -1,0 +1,65 @@
+/* ============================================================
+   Shift Voice — Spacing, Radii, Shadows, Borders, Motion
+   The system is calm and industrial: generous rounding (12–24px),
+   soft low-contrast shadows, hairline navy borders, and a signature
+   blueprint grid background.
+   ============================================================ */
+
+:root {
+  /* ---- Spacing scale (4px base) ---- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;   /* section rhythm + grid cell size */
+
+  /* ---- Radii (rounded, friendly, never sharp) ---- */
+  --radius-sm: 8px;     /* inputs, small chips */
+  --radius-md: 12px;    /* dense cards, dashboard tiles */
+  --radius-lg: 16px;    /* buttons, panels */
+  --radius-xl: 20px;    /* feature cards */
+  --radius-2xl: 24px;   /* hero cards, modals */
+  --radius-pill: 999px; /* badges, tags, mic button */
+
+  /* ---- Shadows (warm-neutral, low contrast) ---- */
+  --shadow-xs: 0 1px 2px rgba(18, 35, 44, 0.06);
+  --shadow-sm: 0 1px 3px rgba(18, 35, 44, 0.08);
+  --shadow-md: 0 3px 14px rgba(18, 35, 44, 0.09);
+  --shadow-lg: 0 10px 30px rgba(18, 35, 44, 0.12);
+  --shadow-xl: 0 20px 45px rgba(18, 35, 44, 0.16);
+  --shadow-focus: 0 0 0 2px rgba(15, 95, 104, 0.14); /* teal focus ring */
+
+  /* ---- Borders ---- */
+  --border-hairline: 1px solid var(--sv-navy-a12);
+  --border-accent-1: 1px solid var(--sv-teal-a25);
+
+  /* ---- Blueprint grid background (the signature texture) ---- */
+  --grid-line: rgba(18, 35, 44, 0.04);
+  --grid-size: 80px;
+  --blueprint-bg:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+
+  /* ---- Motion ---- */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1); /* @kind other */
+  --dur-fast: 150ms; /* @kind other */
+  --dur-base: 200ms; /* @kind other */
+  --dur-slow: 300ms; /* @kind other */
+
+  /* ---- Layout ---- */
+  --container-max: 1200px;
+  --container-pad: 40px;
+}
+
+/* Utility: apply the blueprint grid to any full-bleed surface. */
+.sv-blueprint {
+  background-color: var(--surface-page);
+  background-image: var(--blueprint-bg);
+  background-size: var(--grid-size) var(--grid-size);
+}

@@ -1,0 +1,67 @@
+/* ============================================================
+   Shift Voice — Webfonts (self-hosted, OFL)
+   Digital brand fonts (as implemented in shiftvoice-prototype):
+     · Barlow Condensed  → display / headlines (subs for Cervo Neue Black)
+     · Barlow            → UI & body          (subs for Weissenhof Grotesk)
+   License: SIL Open Font License 1.1 — see assets/fonts/OFL.txt
+   ============================================================ */
+
+/* ---- Barlow (UI / body) ---- */
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/Barlow-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Barlow';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/Barlow-Italic.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../assets/fonts/Barlow-Medium.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../assets/fonts/Barlow-SemiBold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../assets/fonts/Barlow-Bold.ttf') format('truetype');
+}
+
+/* ---- Barlow Condensed (display / headlines / wordmark) ---- */
+@font-face {
+  font-family: 'Barlow Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../assets/fonts/BarlowCondensed-SemiBold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Barlow Condensed';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../assets/fonts/BarlowCondensed-Bold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Barlow Condensed';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('../assets/fonts/BarlowCondensed-ExtraBold.ttf') format('truetype');
+}

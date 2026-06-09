@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vocavic — Structured operational memory for manufacturing</title>
+
+  <!-- React + Babel (pinned) -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <!-- Design System tokens + bundle -->
+  <link rel="stylesheet" href="_ds/shift-voice-design-system-2bf7dbbb-f646-48bb-ad83-7da371168e96/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/shift-voice-design-system-2bf7dbbb-f646-48bb-ad83-7da371168e96/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/shift-voice-design-system-2bf7dbbb-f646-48bb-ad83-7da371168e96/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/shift-voice-design-system-2bf7dbbb-f646-48bb-ad83-7da371168e96/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/shift-voice-design-system-2bf7dbbb-f646-48bb-ad83-7da371168e96/styles.css">
+  <script src="_ds/shift-voice-design-system-2bf7dbbb-f646-48bb-ad83-7da371168e96/_ds_bundle.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { min-height: 100%; }
+    body {
+      font-family: var(--font-ui);
+      color: var(--text-primary);
+      background-color: var(--surface-page);
+      background-image: var(--blueprint-bg);
+      background-size: var(--grid-size) var(--grid-size);
+      -webkit-font-smoothing: antialiased;
+    }
+    #root { position: relative; }
+    .vv-hairline { border-top: 1px solid var(--sv-navy-a10); }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+const DS = window.ShiftVoiceDesignSystem_2bf7db || {};
+const { Button, Card, Badge, Eyebrow, MetricCard, Tag, StatusDot } = DS;
+
+const DISPLAY = 'var(--font-display)';
+const UI = 'var(--font-ui)';
+
+// ─── Vocavic Wordmark (VOCA ink + VIC muted) ───────────────────────────────
+function Wordmark({ theme = 'light', size = 20, style = {} }) {
+  const ink = theme === 'dark' ? 'var(--sv-on-dark)' : 'var(--sv-navy)';
+  const muted = theme === 'dark' ? 'var(--sv-on-dark-faint)' : 'var(--sv-steel)';
+  return (
+    <span style={{
+      fontFamily: DISPLAY, fontWeight: 'var(--fw-black)',
+      letterSpacing: 'var(--tracking-wordmark)', fontSize: size,
+      lineHeight: 1, whiteSpace: 'nowrap', ...style,
+    }}>
+      <span style={{ color: ink }}>VOCA</span><span style={{ color: muted }}>VIC</span>
+    </span>
+  );
+}
+
+// ─── Figurative mark — gear + mic + sound waves (inline SVG) ────────────────
+function Mark({ size = 34, color = 'var(--sv-teal)' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {/* gear */}
+      <g opacity="0.9">
+        <circle cx="24" cy="24" r="15" />
+        {[0,45,90,135,180,225,270,315].map(a => {
+          const r1 = 15, r2 = 18.5;
+          const rad = (a * Math.PI) / 180;
+          return <line key={a} x1={24 + r1 * Math.cos(rad)} y1={24 + r1 * Math.sin(rad)} x2={24 + r2 * Math.cos(rad)} y2={24 + r2 * Math.sin(rad)} />;
+        })}
+      </g>
+      {/* mic body */}
+      <rect x="20.5" y="14" width="7" height="13" rx="3.5" fill={color} stroke="none" />
+      {/* mic stand */}
+      <path d="M17 24a7 7 0 0 0 14 0" />
+      <line x1="24" y1="31" x2="24" y2="34" />
+    </svg>
+  );
+}
+
+// ─── Nav ───────────────────────────────────────────────────────────────────
+function Nav({ onCta, tweaks }) {
+  return (
+    <nav style={{
+      position: 'sticky', top: 0, zIndex: 100,
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      padding: '0 var(--container-pad)', height: 64,
+      background: 'rgba(242, 235, 224, 0.92)',
+      backdropFilter: 'blur(12px)',
+      borderBottom: '1px solid var(--sv-navy-a10)',
+    }}>
+      <span style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
+        <Mark size={30} />
+        <Wordmark size={22} />
+      </span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+        <div style={{ display: 'flex', gap: 22 }} className="vv-navlinks">
+          {[['How it works','#how'],['Quotes','#quotes'],['Demo','#demo'],['About','#about']].map(([label, href]) => (
+            <a key={label} href={href} style={{
+              fontFamily: UI, fontSize: '0.875rem', fontWeight: 'var(--fw-medium)',
+              color: 'var(--text-secondary)', textDecoration: 'none',
+              transition: 'color var(--dur-fast) var(--ease-standard)',
+            }}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
+              onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}
+            >{label}</a>
+          ))}
+        </div>
+        <Button variant="primary" size="sm" onClick={onCta}>{tweaks.ctaLabel}</Button>
+      </div>
+    </nav>
+  );
+}
+
+// ─── Hero ──────────────────────────────────────────────────────────────────
+function Hero({ tweaks, onCta }) {
+  const lines = (tweaks.tagline || 'Capture every moment on the floor.')
+    .split(/\.\s+/).filter(Boolean).map(l => l.replace(/\.$/, ''));
+
+  return (
+    <section style={{
+      padding: '88px var(--container-pad) 72px',
+      maxWidth: 'var(--container-max)', margin: '0 auto',
+      display: 'grid', gridTemplateColumns: '1.05fr 0.95fr',
+      gap: 64, alignItems: 'center',
+    }}>
+      <div>
+        <div style={{ marginBottom: 24 }}>
+          <Eyebrow pill>Structured operational memory</Eyebrow>
+        </div>
+
+        <h1 style={{
+          fontFamily: DISPLAY, fontWeight: 'var(--fw-black)',
+          fontSize: 'clamp(3rem, 5.5vw, var(--text-display-xl))',
+          lineHeight: 'var(--leading-display)', letterSpacing: 'var(--tracking-tight)',
+          color: 'var(--text-primary)', marginBottom: 24,
+        }}>
+          {lines.map((line, i) => <React.Fragment key={i}>{line}.<br /></React.Fragment>)}
+        </h1>
+
+        <p style={{
+          fontSize: 'var(--text-lg)', lineHeight: 'var(--leading-normal)',
+          color: 'var(--text-secondary)', maxWidth: '44ch', marginBottom: 32,
+        }}>
+          Your plant runs on memory that disappears every 8 hours. An operator speaks a short note at shift end — Vocavic transcribes it, structures it, and files it where the next shift, the RCA engineer, and the Tier meeting all read the same record.
+        </p>
+
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+          <Button variant="primary" size="lg" onClick={onCta}>{tweaks.ctaLabel} →</Button>
+          <Button variant="secondary" size="lg" onClick={() => document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' })}>Watch the demo</Button>
+        </div>
+
+        <div style={{ marginTop: 22, display: 'flex', alignItems: 'center', gap: 10, color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
+          <StatusDot status="success" size={8} />
+          Measured, not projected · 73% faster handover in pilot (15 min → 4 min)
+        </div>
+      </div>
+
+      {/* Right: capture moment card */}
+      <CaptureGlance />
+    </section>
+  );
+}
+
+// ─── Capture glance (hero visual) ──────────────────────────────────────────
+function CaptureGlance() {
+  return (
+    <Card padding="0" radius="var(--radius-2xl)" style={{ overflow: 'hidden', boxShadow: 'var(--shadow-xl)' }}>
+      {/* header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--border-default)' }}>
+        <Wordmark size={16} />
+        <Badge status="info" dot>Capturing</Badge>
+      </div>
+      {/* waveform + mic */}
+      <div style={{ padding: '28px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, background: 'var(--sv-teal-a06)' }}>
+        <div style={{ display: 'flex', gap: 4, alignItems: 'center', height: 56 }}>
+          {[16,30,46,28,54,38,22,48,34,52,26,42,18,36,50,24,40,30,20].map((h, i) => (
+            <div key={i} style={{ width: 5, height: h, borderRadius: 3, background: 'var(--sv-teal)', opacity: 0.35 + (h / 90) }} />
+          ))}
+        </div>
+        <div style={{ width: 60, height: 60, borderRadius: 'var(--radius-pill)', background: 'var(--sv-teal)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-md)' }}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--sv-white)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="9" y="3" width="6" height="11" rx="3" fill="var(--sv-white)" stroke="none" />
+            <path d="M6 12a6 6 0 0 0 12 0" /><line x1="12" y1="18" x2="12" y2="21" />
+          </svg>
+        </div>
+      </div>
+      {/* extracted fields */}
+      <div style={{ padding: '18px 20px 20px', display: 'grid', gap: 12 }}>
+        <div style={{ fontSize: 'var(--text-sm)', lineHeight: 'var(--leading-snug)', color: 'var(--text-primary)' }}>
+          “Line 2 sealer was running about 8 degrees warm near end of shift. Pulled a sample, raised the setpoint two notches, looks steady now — keep an eye on it.”
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          {[['Machine','Line 2 sealer'],['Component','sealer jaw'],['Reason','overheating'],['Action','raised setpoint']].map(([k, v]) => (
+            <div key={k} style={{ padding: '8px 10px', borderRadius: 'var(--radius-sm)', background: 'var(--surface-page)', border: '1px solid var(--border-default)' }}>
+              <div style={{ fontSize: '0.625rem', textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--text-secondary)', fontWeight: 'var(--fw-semibold)', marginBottom: 2 }}>{k}</div>
+              <div style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--fw-semibold)', color: 'var(--text-primary)' }}>{v}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <Tag tone="tint">overheating</Tag>
+            <Tag tone="tint">cooling</Tag>
+          </div>
+          <Badge status="success" dot>Completeness 100/100</Badge>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+// ─── Problem: the WPM gap ──────────────────────────────────────────────────
+function TheGap() {
+  const rows = [
+    { label: 'Speaking', wpm: 150, pct: 100, tone: 'var(--sv-teal)', note: 'Fast and natural — but leaves no record' },
+    { label: 'Typing',   wpm: 35,  pct: 23,  tone: 'var(--sv-amber)', note: 'Traceable — but slow and disruptive on the floor' },
+    { label: 'Writing',  wpm: 12,  pct: 8,   tone: 'var(--sv-red)',   note: 'Durable on paper — but never searchable' },
+  ];
+  return (
+    <section id="how" style={{ padding: '0 var(--container-pad) 88px', maxWidth: 'var(--container-max)', margin: '0 auto' }}>
+      <Divider label="The gap" />
+      <div style={{ display: 'grid', gridTemplateColumns: '0.9fr 1.1fr', gap: 56, alignItems: 'center', marginTop: 8 }}>
+        <div>
+          <h2 style={{ fontFamily: DISPLAY, fontWeight: 'var(--fw-black)', fontSize: 'clamp(2rem, 3.4vw, var(--text-display-lg))', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tight)', marginBottom: 18 }}>
+            150 wpm spoken.<br />35 wpm typed.<br />The math is simple.
+          </h2>
+          <p style={{ fontSize: 'var(--text-lg)', lineHeight: 'var(--leading-normal)', color: 'var(--text-secondary)', maxWidth: '42ch' }}>
+            Operators know the most and write the least — not from carelessness, but because typing a structured report mid-shift competes with running the line. So the knowledge stays in their head and walks out at 6am. Voice closes the gap: speak once, and Vocavic does the structuring.
+          </p>
+        </div>
+        <Card padding="var(--space-6)" style={{ display: 'grid', gap: 18 }}>
+          {rows.map(({ label, wpm, pct, tone, note }) => (
+            <div key={label}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
+                <span style={{ fontSize: 'var(--text-base)', fontWeight: 'var(--fw-semibold)' }}>{label}</span>
+                <span style={{ fontFamily: DISPLAY, fontWeight: 'var(--fw-black)', fontSize: '1.4rem', color: tone, fontVariantNumeric: 'tabular-nums' }}>{wpm}<span style={{ fontFamily: UI, fontSize: '0.75rem', fontWeight: 'var(--fw-semibold)', color: 'var(--text-secondary)', marginLeft: 4 }}>wpm</span></span>
+              </div>
+              <div style={{ height: 10, borderRadius: 'var(--radius-pill)', background: 'var(--sv-line)', overflow: 'hidden', marginBottom: 6 }}>
+                <div style={{ height: '100%', width: `${pct}%`, borderRadius: 'var(--radius-pill)', background: tone, opacity: 0.85 }} />
+              </div>
+              <div style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>{note}</div>
+            </div>
+          ))}
+          <div className="vv-hairline" style={{ paddingTop: 14, fontSize: 'var(--text-sm)', fontWeight: 'var(--fw-bold)', color: 'var(--sv-teal)', lineHeight: 'var(--leading-snug)' }}>
+            Vocavic = voice speed + written traceability + structured search
+          </div>
+        </Card>
+      </div>
+    </section>
+  );
+}
+
+// ─── Quotes ────────────────────────────────────────────────────────────────
+function Quotes() {
+  const quotes = [
+    {
+      text: "We're often getting two-line reports from operators. As a manager, I sometimes wonder what actually happened at the start of the day. Machines get prioritized, and note-taking is left for later — which never really happens.",
+      name: "Plant Operations Manager", role: "Food & Beverage · 3 production lines", initial: "M",
+    },
+    {
+      text: "A third of our floor crew are temporary workers and many don't speak the local language well. They can describe a problem clearly in their own words, but writing a structured note doesn't happen. If they could just talk it through, we'd catch so much more before the next shift inherits it.",
+      name: "Shift Supervisor", role: "Packaging · Seasonal workforce", initial: "S",
+    },
+    {
+      text: "The information lives in people's heads, not on paper. We've had incidents where the incoming supervisor had no idea a recurring issue had already been flagged three times that day. A spoken note would have changed the outcome.",
+      name: "Head of Manufacturing Excellence", role: "Industrial Components · 2 sites", initial: "H",
+    },
+  ];
+  return (
+    <section id="quotes" style={{ padding: '0 var(--container-pad) 88px', maxWidth: 'var(--container-max)', margin: '0 auto' }}>
+      <div style={{ textAlign: 'center', marginBottom: 44 }}>
+        <Eyebrow>What we hear from operations teams</Eyebrow>
+        <h2 style={{ fontFamily: DISPLAY, fontWeight: 'var(--fw-black)', fontSize: 'clamp(1.8rem, 3vw, var(--text-display-md))', lineHeight: 'var(--leading-tight)', marginTop: 12 }}>
+          The problem isn't new. The capture layer is.
+        </h2>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+        {quotes.map(({ text, name, role, initial }) => (
+          <Card key={name} accentColor="var(--sv-teal)" accentSide="top" padding="var(--space-6)" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ fontFamily: DISPLAY, fontSize: '3.2rem', lineHeight: 0.7, color: 'var(--sv-teal)', opacity: 0.22, fontWeight: 'var(--fw-black)' }}>”</div>
+            <p style={{ fontSize: 'var(--text-base)', lineHeight: 'var(--leading-normal)', color: 'var(--text-primary)', margin: 0, flex: 1 }}>{text}</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 38, height: 38, borderRadius: 'var(--radius-pill)', background: 'var(--sv-teal)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: DISPLAY, fontSize: '1rem', fontWeight: 'var(--fw-black)', color: 'var(--sv-white)', flexShrink: 0 }}>{initial}</div>
+              <div>
+                <div style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--fw-bold)' }}>{name}</div>
+                <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', marginTop: 2 }}>{role}</div>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ─── Video ─────────────────────────────────────────────────────────────────
+function VideoSection() {
+  const videoId = 'X71YMNsw5UM';
+  const ytUrl = `https://www.youtube.com/watch?v=${videoId}`;
+  return (
+    <section id="demo" style={{ padding: '0 var(--container-pad) 88px', maxWidth: 1080, margin: '0 auto' }}>
+      <div style={{ textAlign: 'center', marginBottom: 36 }}>
+        <Eyebrow>See it on the floor</Eyebrow>
+        <h2 style={{ fontFamily: DISPLAY, fontWeight: 'var(--fw-black)', fontSize: 'clamp(1.8rem, 3vw, var(--text-display-md))', lineHeight: 'var(--leading-tight)', marginTop: 12 }}>
+          Two minutes, start to structured record
+        </h2>
+      </div>
+      <a href={ytUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
+        <div style={{
+          position: 'relative', borderRadius: 'var(--radius-2xl)', overflow: 'hidden',
+          boxShadow: 'var(--shadow-xl)', background: 'var(--sv-navy)', aspectRatio: '16 / 9', cursor: 'pointer',
+        }}
+          onMouseEnter={e => { e.currentTarget.querySelector('.vv-play').style.transform = 'scale(1.08)'; e.currentTarget.querySelector('.vv-ov').style.background = 'rgba(18,35,44,0.5)'; }}
+          onMouseLeave={e => { e.currentTarget.querySelector('.vv-play').style.transform = 'scale(1)'; e.currentTarget.querySelector('.vv-ov').style.background = 'rgba(18,35,44,0.4)'; }}
+        >
+          <img src={`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`} alt="Vocavic demo" onError={e => { e.target.style.display = 'none'; }}
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 1 }} />
+          {/* CSS fallback */}
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, var(--sv-navy) 0%, var(--sv-navy-2) 100%)', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', inset: 0, opacity: 0.08, backgroundImage: 'linear-gradient(rgba(255,255,255,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.12) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+            <div style={{ position: 'absolute', bottom: 34, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 4, alignItems: 'flex-end' }}>
+              {[18,28,42,55,38,62,44,30,50,36,24,46,60,34,22,48,56,32,44,26].map((h, i) => (
+                <div key={i} style={{ width: 6, height: h, borderRadius: 3, background: 'var(--sv-teal-light)', opacity: 0.5 }} />
+              ))}
+            </div>
+            <div style={{ position: 'absolute', top: 28, left: 28 }}><Wordmark theme="dark" size={18} /></div>
+          </div>
+          <div className="vv-ov" style={{ position: 'absolute', inset: 0, zIndex: 10, background: 'rgba(18,35,44,0.4)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, transition: 'background var(--dur-base) var(--ease-standard)' }}>
+            <div className="vv-play" style={{ width: 74, height: 74, borderRadius: 'var(--radius-pill)', background: 'var(--sv-floral)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-lg)', transition: 'transform var(--dur-base) var(--ease-standard)' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M8 5.14v14l11-7-11-7z" fill="var(--sv-teal)" /></svg>
+            </div>
+            <div style={{ padding: '6px 16px', borderRadius: 'var(--radius-sm)', background: 'rgba(18,35,44,0.7)', fontSize: 'var(--text-sm)', fontWeight: 'var(--fw-semibold)', color: 'var(--sv-on-dark)', fontFamily: UI }}>Watch the demo →</div>
+          </div>
+        </div>
+      </a>
+    </section>
+  );
+}
+
+// ─── Divider with centered label ───────────────────────────────────────────
+function Divider({ label }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 32 }}>
+      <div style={{ flex: 1, height: 1, background: 'var(--sv-navy-a10)' }} />
+      <Eyebrow>{label}</Eyebrow>
+      <div style={{ flex: 1, height: 1, background: 'var(--sv-navy-a10)' }} />
+    </div>
+  );
+}
+
+// ─── Dashboard preview (inline) ────────────────────────────────────────────
+function DashboardPreview() {
+  const eyebrowSm = { fontSize: '0.625rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-secondary)', fontWeight: 'var(--fw-bold)', marginBottom: 6 };
+  const notes = [
+    { time: '15:24', who: 'AB · Line 1 / Sealer', text: 'Seal line looks stable now. Pulled a sample from the last warm pack — QC will compare if the drift returns.', tags: ['overheating','seal'], type: 'Maintenance', typeColor: 'var(--type-maintenance)', status: 'success', statusLabel: 'Resolved' },
+    { time: '15:02', who: 'MK · Line 1 / Film Feed', text: 'Film tension settled after the guide tweak, but there is still a sharp snap when the roll change finishes.', tags: ['film-tracking'], type: 'Operations', typeColor: 'var(--type-operations)', status: 'warning', statusLabel: 'Monitoring' },
+    { time: '14:48', who: 'AB · Line 2 / Cartoner', text: 'Cartoner photoeye needed a second wipe. False reject cleared once dust was pulled off the face.', tags: ['sensor','cleaning'], type: 'Quality', typeColor: 'var(--type-quality)', status: 'success', statusLabel: 'Resolved' },
+  ];
+  return (
+    <div style={{ background: 'var(--surface-page)', backgroundImage: 'var(--blueprint-bg)', backgroundSize: 'var(--grid-size) var(--grid-size)', padding: 16, minHeight: 600, fontFamily: UI }}>
+      {/* topbar */}
+      <Card padding="12px 16px" radius="var(--radius-md)" style={{ marginBottom: 14, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <Wordmark size={15} />
+          <span style={{ fontSize: '0.625rem', color: 'var(--text-secondary)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Live dashboard</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Badge status="info" dot>Capture connected</Badge>
+          <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>Last note 12s ago</span>
+        </div>
+      </Card>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 264px', gap: 14 }}>
+        {/* left: summary + notes */}
+        <div style={{ display: 'grid', gap: 14 }}>
+          <Card accentColor="var(--sv-teal)" accentSide="top" padding="18px 20px">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 12 }}>
+              <div style={{ minWidth: 0 }}>
+                <div style={eyebrowSm}>AI shift summary</div>
+                <h3 style={{ fontFamily: DISPLAY, fontSize: '1.5rem', fontWeight: 'var(--fw-black)', margin: 0, lineHeight: 1.1, whiteSpace: 'nowrap' }}>Operator summary</h3>
+              </div>
+              <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                <Button variant="secondary" size="sm">Regenerate</Button>
+                <Button variant="ghost" size="sm">Copy</Button>
+              </div>
+            </div>
+            <p style={{ fontSize: 'var(--text-sm)', lineHeight: 'var(--leading-normal)', color: 'var(--text-primary)', margin: '0 0 12px' }}>
+              The shift centered on temperature drift at the Line 2 sealer, with film tracking surfacing twice after roll changes. Operators raised the setpoint and cleaned a fouled photoeye to steady output. Four follow-ups remain open into the next shift.
+            </p>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              <Tag tone="tint">overheating</Tag>
+              <Tag tone="tint">film-tracking</Tag>
+              <Tag tone="tint">sensor</Tag>
+              <Badge status="warning" dot>4 open items</Badge>
+            </div>
+          </Card>
+
+          {notes.map(({ time, who, text, tags, type, typeColor, status, statusLabel }) => (
+            <Card key={time} accentColor={typeColor} accentSide="left" padding="14px 16px">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6, gap: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+                  <span style={{ fontFamily: DISPLAY, fontSize: '1.25rem', fontWeight: 'var(--fw-black)', fontVariantNumeric: 'tabular-nums' }}>{time}</span>
+                  <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>{who}</span>
+                </div>
+                <Badge status={status} dot>{statusLabel}</Badge>
+              </div>
+              <p style={{ margin: '0 0 10px', fontSize: 'var(--text-sm)', lineHeight: 'var(--leading-snug)', color: 'var(--text-primary)' }}>{text}</p>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+                <Badge status="info" tone="soft">{type}</Badge>
+                {tags.map(t => <Tag key={t} tone="tint">{t}</Tag>)}
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        {/* right: shift report rail */}
+        <div style={{ display: 'grid', gap: 12, alignContent: 'start' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <MetricCard label="Notes" value="11" sub="this shift" />
+            <MetricCard label="Coverage" value="91%" tone="good" sub="10 of 11 tagged" />
+            <MetricCard label="Open" value="4" tone="warn" sub="follow-ups" />
+            <MetricCard label="Handover" value="4m" tone="accent" sub="was 15m" />
+          </div>
+          <Card padding="16px">
+            <div style={{ ...eyebrowSm, color: 'var(--sv-red-ink)' }}>Needs attention</div>
+            <div style={{ display: 'grid', gap: 8, marginTop: 4 }}>
+              {[
+                { label: 'Untagged note', n: 1, s: 'warning' },
+                { label: 'Low-confidence transcript', n: 1, s: 'warning' },
+                { label: 'Repeated issue (3+ notes)', n: 5, s: 'danger' },
+              ].map(({ label, n, s }) => (
+                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 'var(--radius-md)', background: 'var(--surface-page)', border: '1px solid var(--border-default)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <StatusDot status={s} size={8} />
+                    <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--fw-semibold)' }}>{label}</span>
+                  </div>
+                  <span style={{ minWidth: 24, height: 24, borderRadius: 'var(--radius-pill)', background: 'var(--sv-navy)', color: 'var(--sv-white)', fontSize: 'var(--text-xs)', fontWeight: 'var(--fw-bold)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{n}</span>
+                </div>
+              ))}
+            </div>
+          </Card>
+          <Card padding="16px" style={{ background: 'var(--sv-teal-a06)' }}>
+            <div style={eyebrowSm}>Supervisor handover note</div>
+            <p style={{ margin: 0, fontSize: 'var(--text-sm)', lineHeight: 'var(--leading-snug)', color: 'var(--text-primary)' }}>
+              Watch Line 2 sealer temp into the night shift — setpoint raised, sample held with QC. Film feed snapping on roll change, not yet root-caused.
+            </p>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Product Tour (dashboard in browser chrome) ────────────────────────────
+function ProductTour() {
+  return (
+    <section style={{ padding: '0 var(--container-pad) 96px', maxWidth: 1400, margin: '0 auto' }}>
+      <div style={{ textAlign: 'center', marginBottom: 44 }}>
+        <Eyebrow>One record, every meeting</Eyebrow>
+        <h2 style={{ fontFamily: DISPLAY, fontWeight: 'var(--fw-black)', fontSize: 'clamp(2rem, 3.5vw, var(--text-display-lg))', lineHeight: 'var(--leading-tight)', marginTop: 12, marginBottom: 14 }}>
+          Supervisor-ready from the first note
+        </h2>
+        <p style={{ fontSize: 'var(--text-lg)', color: 'var(--text-secondary)', lineHeight: 'var(--leading-normal)', maxWidth: '56ch', margin: '0 auto' }}>
+          The live dashboard turns the shift's voice notes into filterable event cards, an AI summary, and a handover-ready report — the same structured record for the next shift, RCA, and the Tier meeting.
+        </p>
+      </div>
+
+      <div style={{ borderRadius: 'var(--radius-2xl)', overflow: 'hidden', boxShadow: 'var(--shadow-xl)', border: '1px solid var(--border-default)' }}>
+        {/* browser chrome */}
+        <div style={{ background: 'var(--surface-chrome)', borderBottom: '1px solid var(--border-default)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', height: 40, padding: '0 14px', gap: 8 }}>
+            <div style={{ display: 'flex', gap: 7, paddingRight: 12 }}>
+              {['#ff5f57','#febc2e','#28c840'].map(c => <div key={c} style={{ width: 11, height: 11, borderRadius: '50%', background: c }} />)}
+            </div>
+            <div style={{ background: 'var(--surface-card)', border: '1px solid var(--border-default)', borderRadius: '7px 7px 0 0', padding: '0 14px', height: 30, display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', minWidth: 200 }}>
+              <StatusDot status="info" size={9} /> Vocavic · Live dashboard
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', padding: '4px 14px 7px', gap: 10 }}>
+            <div style={{ display: 'flex', gap: 6, color: 'var(--text-secondary)' }}>
+              <span>←</span><span>→</span><span>↺</span>
+            </div>
+            <div style={{ flex: 1, height: 26, borderRadius: 'var(--radius-pill)', background: 'var(--surface-page)', border: '1px solid var(--border-default)', display: 'flex', alignItems: 'center', padding: '0 12px', fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', gap: 6 }}>
+              <svg width="9" height="11" viewBox="0 0 10 12" fill="none"><path d="M5 0C3.07 0 1.5 1.57 1.5 3.5C1.5 6.13 5 11 5 11C5 11 8.5 6.13 8.5 3.5C8.5 1.57 6.93 0 5 0ZM5 4.75C4.31 4.75 3.75 4.19 3.75 3.5C3.75 2.81 4.31 2.25 5 2.25C5.69 2.25 6.25 2.81 6.25 3.5C6.25 4.19 5.69 4.75 5 4.75Z" fill="var(--sv-steel)"/></svg>
+              app.vocavic.com/dashboard
+            </div>
+          </div>
+        </div>
+        <div style={{ overflow: 'auto', maxHeight: 680 }}>
+          <DashboardPreview />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── About ─────────────────────────────────────────────────────────────────
+function About() {
+  return (
+    <section id="about" style={{ background: 'var(--surface-dark)', color: 'var(--text-on-dark)', padding: '88px var(--container-pad)' }}>
+      <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
+        <div>
+          <span style={{ display: 'inline-block', marginBottom: 16 }}>
+            <span style={{ fontFamily: UI, fontSize: 'var(--text-xs)', fontWeight: 'var(--fw-semibold)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-label)', color: 'var(--sv-on-dark-faint)' }}>About Vocavic</span>
+          </span>
+          <h2 style={{ fontFamily: DISPLAY, fontWeight: 'var(--fw-black)', fontSize: 'clamp(2rem, 3.5vw, var(--text-display-lg))', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tight)', color: 'var(--sv-on-dark)', marginBottom: 22 }}>
+            We've worked inside plants
+          </h2>
+          <p style={{ fontSize: 'var(--text-lg)', lineHeight: 'var(--leading-normal)', color: 'var(--sv-on-dark-soft)', maxWidth: '46ch', marginBottom: 18 }}>
+            Vocavic was started by engineers and operations leads who watched shift knowledge disappear at handover — not from carelessness, but because no tool made it easy to capture. We built the one we wished existed.
+          </p>
+          <p style={{ fontSize: 'var(--text-lg)', lineHeight: 'var(--leading-normal)', color: 'var(--sv-on-dark-soft)', maxWidth: '46ch' }}>
+            We work alongside a small cohort of manufacturing sites in pilot to make sure the product earns its place on the floor — not as another system, but as the memory every shift needs.
+          </p>
+        </div>
+        <div style={{ display: 'grid', gap: 12 }}>
+          {[
+            { label: 'Mission', value: 'Make operator knowledge durable, searchable, and available to the next shift.' },
+            { label: 'Approach', value: 'Voice-first capture with zero workflow disruption. Operators speak; Vocavic structures.' },
+            { label: 'Stage', value: 'Pilot program with a small cohort of manufacturing sites. Limited spots.' },
+            { label: 'Privacy', value: 'Transcripts stay on your infrastructure. No operator audio stored externally.' },
+          ].map(({ label, value }) => (
+            <div key={label} style={{ padding: '16px 18px', borderRadius: 'var(--radius-lg)', border: '1px solid rgba(255,251,245,0.12)', background: 'rgba(255,251,245,0.05)' }}>
+              <div style={{ fontSize: 'var(--text-xs)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-label)', fontWeight: 'var(--fw-bold)', color: 'var(--sv-teal-light)', marginBottom: 6 }}>{label}</div>
+              <div style={{ fontSize: 'var(--text-base)', lineHeight: 'var(--leading-snug)', color: 'var(--sv-on-dark)' }}>{value}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Final CTA + Footer ────────────────────────────────────────────────────
+function Footer({ onCta, tweaks }) {
+  return (
+    <footer>
+      {/* CTA band */}
+      <div style={{ padding: '80px var(--container-pad)', maxWidth: 'var(--container-max)', margin: '0 auto', textAlign: 'center' }}>
+        <span style={{ display: 'inline-flex', marginBottom: 20 }}><Mark size={44} /></span>
+        <h2 style={{ fontFamily: DISPLAY, fontWeight: 'var(--fw-black)', fontSize: 'clamp(2rem, 4vw, var(--text-display-lg))', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tight)', marginBottom: 16 }}>
+          Stop losing the shift.
+        </h2>
+        <p style={{ fontSize: 'var(--text-lg)', color: 'var(--text-secondary)', maxWidth: '46ch', margin: '0 auto 28px', lineHeight: 'var(--leading-normal)' }}>
+          Book a call and give your plant a memory that doesn't reset every 8 hours. We'll walk your lines and show you the live capture flow.
+        </p>
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Button variant="primary" size="lg" onClick={onCta}>{tweaks.ctaLabel} →</Button>
+          <Button variant="secondary" size="lg" onClick={() => document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' })}>Watch the demo</Button>
+        </div>
+      </div>
+      {/* footer bar */}
+      <div style={{ background: 'var(--surface-dark)', color: 'var(--sv-on-dark)', padding: '48px var(--container-pad)' }}>
+        <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 24 }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
+            <Mark size={28} color="var(--sv-teal-light)" />
+            <Wordmark theme="dark" size={20} />
+          </span>
+          <span style={{ fontSize: 'var(--text-sm)', color: 'var(--sv-on-dark-soft)' }}>Capture every moment on the floor.</span>
+        </div>
+        <div style={{ maxWidth: 'var(--container-max)', margin: '24px auto 0', borderTop: '1px solid rgba(255,251,245,0.1)', paddingTop: 18, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, fontSize: 'var(--text-xs)', color: 'var(--sv-on-dark-faint)' }}>
+          <span>© 2026 Vocavic. All rights reserved.</span>
+          <span>Privacy · Contact</span>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+// ─── Tweaks ────────────────────────────────────────────────────────────────
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "tagline": "Capture every moment on the floor.",
+  "ctaLabel": "Book a call"
+}/*EDITMODE-END*/;
+
+const BOOKING_URL = 'https://tidycal.com/lesykua/vocavic-meeting';
+
+function TweaksPanel({ tweaks, onChange, visible }) {
+  if (!visible) return null;
+  return (
+    <div style={{
+      position: 'fixed', bottom: 24, right: 24, zIndex: 9999, width: 280,
+      background: 'var(--surface-card)', border: '1px solid var(--border-default)',
+      borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-xl)',
+      padding: 20, display: 'grid', gap: 16, fontFamily: UI,
+    }}>
+      <div style={{ fontWeight: 'var(--fw-bold)', fontSize: 'var(--text-sm)', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Tweaks</div>
+      {[['tagline','Hero tagline'],['ctaLabel','CTA label']].map(([key, label]) => (
+        <label key={key} style={{ display: 'grid', gap: 6 }}>
+          <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</span>
+          <input value={tweaks[key]} onChange={e => onChange(key, e.target.value)}
+            style={{ fontFamily: UI, fontSize: 'var(--text-sm)', padding: '8px 10px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-default)', background: 'var(--surface-page)', color: 'var(--text-primary)', width: '100%' }} />
+        </label>
+      ))}
+    </div>
+  );
+}
+
+// ─── App ───────────────────────────────────────────────────────────────────
+function App() {
+  const [tweaks, setTweaks] = useState(TWEAK_DEFAULTS);
+  const [tweaksVisible, setTweaksVisible] = useState(false);
+
+  function bookCall() {
+    window.open(BOOKING_URL, '_blank', 'noopener,noreferrer');
+  }
+  function handleTweak(key, val) {
+    const next = { ...tweaks, [key]: val };
+    setTweaks(next);
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits: next }, '*');
+  }
+  useEffect(() => {
+    window.addEventListener('message', e => {
+      if (e.data?.type === '__activate_edit_mode') setTweaksVisible(true);
+      if (e.data?.type === '__deactivate_edit_mode') setTweaksVisible(false);
+    });
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+  }, []);
+
+  return (
+    <>
+      <Nav onCta={bookCall} tweaks={tweaks} />
+      <Hero tweaks={tweaks} onCta={bookCall} />
+      <TheGap />
+      <Quotes />
+      <VideoSection />
+      <ProductTour />
+      <About />
+      <Footer onCta={bookCall} tweaks={tweaks} />
+      <TweaksPanel tweaks={tweaks} onChange={handleTweak} visible={tweaksVisible} />
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+    <rect width="120" height="80" fill="#f2ebe0"/>
+    <circle cx="60" cy="40" r="16" fill="none" stroke="#0f5f68" stroke-width="2.5"/>
+    <rect x="56" y="31" width="8" height="13" rx="4" fill="#0f5f68"/>
+    <text x="60" y="68" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#12232c">VOCAVIC</text>
+  </svg>
+</template>
+</body>
+</html>

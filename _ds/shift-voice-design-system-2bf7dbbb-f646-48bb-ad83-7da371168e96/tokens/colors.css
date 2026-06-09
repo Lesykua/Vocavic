@@ -1,0 +1,80 @@
+/* ============================================================
+   Shift Voice — Color Tokens
+   Source of truth: Brand_Book_ShiftVoice.pdf + shiftvoice-prototype
+   The brand runs on warm off-whites anchored by deep navy, with a
+   single teal accent. Functional colors (green/amber/red) stay <5%.
+   ============================================================ */
+
+:root {
+  /* ---- Brand core / structure ---- */
+  --sv-navy: #12232c;          /* Deep navy — primary text, structure, frames */
+  --sv-navy-2: #1c3540;        /* lifted navy for dark-surface layering */
+
+  /* ---- Brand accent (teal) ---- */
+  --sv-teal: #0f5f68;          /* Deep Teal — primary accent, links, key actions */
+  --sv-teal-hover: #127a85;    /* hover for teal actions */
+  --sv-teal-light: #7ec8cf;    /* Light Sea Green — highlights on dark, subtle accents */
+
+  /* ---- Supporting neutral ---- */
+  --sv-steel: #687d85;         /* Dark grayish cyan — secondary text, icons, inactive */
+
+  /* ---- Warm neutrals (the dominant ~60% layer) ---- */
+  --sv-vanilla: #f2ebe0;       /* Vanilla Sugar — primary page background */
+  --sv-vanilla-deep: #ece4d6;  /* slightly deeper warm fill (toolbars, browser chrome) */
+  --sv-floral: #fffbf5;        /* Floral White — cards, panels, raised surfaces */
+  --sv-line: #e0d9cf;          /* warm hairline / track on vanilla */
+
+  /* ---- Functional / semantic ---- */
+  --sv-green: #2f8f63;         /* Sea Green — success, complete, resolved */
+  --sv-green-ink: #217a4e;     /* readable green text on light */
+  --sv-amber: #c68a22;         /* Brandy Punch — warning, pending, monitoring */
+  --sv-amber-ink: #b87d10;     /* readable amber text on light */
+  --sv-red: #d65848;           /* Rust Red — error, failure, open/critical */
+  --sv-red-ink: #c0402e;       /* readable red text on light */
+
+  /* ---- Alpha helpers (navy & teal washes used everywhere) ---- */
+  --sv-navy-a07: rgba(18, 35, 44, 0.07);   /* blueprint grid lines */
+  --sv-navy-a08: rgba(18, 35, 44, 0.08);   /* tracks, subtle fills */
+  --sv-navy-a10: rgba(18, 35, 44, 0.10);   /* hairline borders */
+  --sv-navy-a12: rgba(18, 35, 44, 0.12);   /* standard card border */
+  --sv-teal-a06: rgba(15, 95, 104, 0.06);  /* teal tint surface */
+  --sv-teal-a10: rgba(15, 95, 104, 0.10);  /* badge / pill tint */
+  --sv-teal-a25: rgba(15, 95, 104, 0.25);  /* teal-tinted border */
+
+  /* ---- Pure ---- */
+  --sv-white: #ffffff;
+  --sv-on-dark: rgba(255, 251, 245, 0.92); /* floral-tinted text on navy */
+  --sv-on-dark-soft: rgba(255, 251, 245, 0.5);
+  --sv-on-dark-faint: rgba(255, 251, 245, 0.32);
+
+  /* ============================================================
+     Semantic aliases — prefer these in components
+     ============================================================ */
+  --surface-page: var(--sv-vanilla);
+  --surface-card: var(--sv-floral);
+  --surface-sunken: var(--sv-vanilla);
+  --surface-dark: var(--sv-navy);
+  --surface-chrome: var(--sv-vanilla-deep);
+
+  --text-primary: var(--sv-navy);
+  --text-secondary: var(--sv-steel);
+  --text-on-dark: var(--sv-on-dark);
+  --text-accent: var(--sv-teal);
+
+  --border-default: var(--sv-navy-a12);
+  --border-strong: var(--sv-navy-a10);
+  --border-accent: var(--sv-teal-a25);
+
+  --action-primary: var(--sv-teal);
+  --action-primary-hover: var(--sv-teal-hover);
+
+  --status-success: var(--sv-green);
+  --status-warning: var(--sv-amber);
+  --status-danger: var(--sv-red);
+
+  /* Event-type accents (dashboard taxonomy) */
+  --type-maintenance: var(--sv-teal);
+  --type-operations: var(--sv-green-ink);
+  --type-quality: var(--sv-amber-ink);
+  --type-safety: var(--sv-red-ink);
+}

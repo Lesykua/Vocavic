@@ -327,7 +327,7 @@ function VideoSection() {
         onMouseLeave={e => { if (playing) return; const p = e.currentTarget.querySelector('.vv-play'); const o = e.currentTarget.querySelector('.vv-ov'); if (p) p.style.transform = 'scale(1)'; if (o) o.style.background = 'rgba(18,35,44,0.4)'; }}
       >
         {playing ? (
-          <video ref={videoRef} src={DEMO_VIDEO_URL} controls playsInline
+          <video ref={videoRef} src={DEMO_VIDEO_URL} controls playsInline onEnded={() => setPlaying(false)}
             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', background: '#000', zIndex: 20 }} />
         ) : (
           <>

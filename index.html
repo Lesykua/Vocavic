@@ -31,6 +31,9 @@
     }
     #root { position: relative; }
     .vv-hairline { border-top: 1px solid var(--sv-navy-a10); }
+    @media (max-width: 767px) {
+      .vv-navlinks { display: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -43,6 +46,16 @@ const { Button, Card, Badge, Eyebrow, MetricCard, Tag, StatusDot } = DS;
 
 const DISPLAY = 'var(--font-display)';
 const UI = 'var(--font-ui)';
+
+function useIsMobile(bp = 768) {
+  const [m, setM] = useState(() => window.innerWidth < bp);
+  useEffect(() => {
+    const fn = () => setM(window.innerWidth < bp);
+    window.addEventListener('resize', fn);
+    return () => window.removeEventListener('resize', fn);
+  }, []);
+  return m;
+}
 
 // ─── Vocavic Wordmark (VOCA ink + VIC muted) ───────────────────────────────
 function Wordmark({ theme = 'light', size = 20, style = {} }) {
@@ -117,15 +130,16 @@ function Nav({ onCta, tweaks }) {
 
 // ─── Hero ──────────────────────────────────────────────────────────────────
 function Hero({ tweaks, onCta }) {
+  const mobile = useIsMobile();
   const lines = (tweaks.tagline || 'Capture every moment on the floor.')
     .split(/\.\s+/).filter(Boolean).map(l => l.replace(/\.$/, ''));
 
   return (
     <section style={{
-      padding: '88px var(--container-pad) 72px',
+      padding: mobile ? '40px var(--container-pad) 32px' : '88px var(--container-pad) 72px',
       maxWidth: 'var(--container-max)', margin: '0 auto',
-      display: 'grid', gridTemplateColumns: '1.05fr 0.95fr',
-      gap: 64, alignItems: 'center',
+      display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1.05fr 0.95fr',
+      gap: mobile ? 32 : 64, alignItems: 'center',
     }}>
       <div>
         <div style={{ marginBottom: 24 }}>
@@ -215,15 +229,16 @@ function CaptureGlance() {
 
 // ─── Problem: the WPM gap ──────────────────────────────────────────────────
 function TheGap() {
+  const mobile = useIsMobile();
   const rows = [
     { label: 'Speaking', wpm: 150, pct: 100, tone: 'var(--sv-teal)', note: 'Fast and natural — but leaves no record' },
     { label: 'Typing',   wpm: 35,  pct: 23,  tone: 'var(--sv-amber)', note: 'Traceable — but slow and disruptive on the floor' },
     { label: 'Writing',  wpm: 12,  pct: 8,   tone: 'var(--sv-red)',   note: 'Durable on paper — but never searchable' },
   ];
   return (
-    <section id="how" style={{ padding: '0 var(--container-pad) 88px', maxWidth: 'var(--container-max)', margin: '0 auto' }}>
+    <section id="how" style={{ padding: mobile ? '0 var(--container-pad) 56px' : '0 var(--container-pad) 88px', maxWidth: 'var(--container-max)', margin: '0 auto' }}>
       <Divider label="The gap" />
-      <div style={{ display: 'grid', gridTemplateColumns: '0.9fr 1.1fr', gap: 56, alignItems: 'center', marginTop: 8 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '0.9fr 1.1fr', gap: mobile ? 32 : 56, alignItems: 'center', marginTop: 8 }}>
         <div>
           <h2 style={{ fontFamily: DISPLAY, fontWeight: 'var(--fw-black)', fontSize: 'clamp(2rem, 3.4vw, var(--text-display-lg))', lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tight)', marginBottom: 18 }}>
             150 wpm spoken.<br />35 wpm typed.<br />The math is simple.
@@ -256,6 +271,7 @@ function TheGap() {
 
 // ─── Quotes ────────────────────────────────────────────────────────────────
 function Quotes() {
+  const mobile = useIsMobile();
   const quotes = [
     {
       text: "We're often getting two-line reports from operators. As a manager, I sometimes wonder what actually happened at the start of the day. Machines get prioritized, and note-taking is left for later — which never really happens.",
@@ -271,14 +287,14 @@ function Quotes() {
     },
   ];
   return (
-    <section id="quotes" style={{ padding: '0 var(--container-pad) 88px', maxWidth: 'var(--container-max)', margin: '0 auto' }}>
+    <section id="quotes" style={{ padding: mobile ? '0 var(--container-pad) 56px' : '0 var(--container-pad) 88px', maxWidth: 'var(--container-max)', margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: 44 }}>
         <Eyebrow>What we hear from operations teams</Eyebrow>
         <h2 style={{ fontFamily: DISPLAY, fontWeight: 'var(--fw-black)', fontSize: 'clamp(1.8rem, 3vw, var(--text-display-md))', lineHeight: 'var(--leading-tight)', marginTop: 12 }}>
           The problem isn't new. The capture layer is.
         </h2>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : 'repeat(3, 1fr)', gap: mobile ? 16 : 20 }}>
         {quotes.map(({ text, name, role, initial }) => (
           <Card key={name} accentColor="var(--sv-teal)" accentSide="top" padding="var(--space-6)" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div style={{ fontFamily: DISPLAY, fontSize: '3.2rem', lineHeight: 0.7, color: 'var(--sv-teal)', opacity: 0.22, fontWeight: 'var(--fw-black)' }}>”</div>
@@ -362,6 +378,7 @@ function Divider({ label }) {
 
 // ─── Dashboard preview (inline) ────────────────────────────────────────────
 function DashboardPreview() {
+  const mobile = useIsMobile();
   const eyebrowSm = { fontSize: '0.625rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-secondary)', fontWeight: 'var(--fw-bold)', marginBottom: 6 };
   const notes = [
     { time: '15:24', who: 'AB · Line 1 / Sealer', text: 'Seal line looks stable now. Pulled a sample from the last warm pack — QC will compare if the drift returns.', tags: ['overheating','seal'], type: 'Maintenance', typeColor: 'var(--type-maintenance)', status: 'success', statusLabel: 'Resolved' },
@@ -382,7 +399,7 @@ function DashboardPreview() {
         </div>
       </Card>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 264px', gap: 14 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 264px', gap: 14 }}>
         {/* left: summary + notes */}
         <div style={{ display: 'grid', gap: 14 }}>
           <Card accentColor="var(--sv-teal)" accentSide="top" padding="18px 20px">
@@ -508,6 +525,7 @@ function ProductTour() {
 
 // ─── Pricing ───────────────────────────────────────────────────────────────
 function Pricing({ onCta, tweaks }) {
+  const mobile = useIsMobile();
   const includes = [
     'Voice capture PWA for every operator',
     'Automatic field extraction & completeness scoring',
@@ -528,7 +546,7 @@ function Pricing({ onCta, tweaks }) {
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.15fr 0.85fr', gap: 20, alignItems: 'stretch', maxWidth: 980, margin: '0 auto' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1.15fr 0.85fr', gap: 20, alignItems: 'stretch', maxWidth: 980, margin: '0 auto' }}>
         {/* Main price card */}
         <Card accentColor="var(--sv-teal)" accentSide="top" padding="var(--space-6)" style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
@@ -589,9 +607,10 @@ function Pricing({ onCta, tweaks }) {
 
 // ─── About ─────────────────────────────────────────────────────────────────
 function About() {
+  const mobile = useIsMobile();
   return (
-    <section id="about" style={{ background: 'var(--surface-dark)', color: 'var(--text-on-dark)', padding: '88px var(--container-pad)' }}>
-      <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
+    <section id="about" style={{ background: 'var(--surface-dark)', color: 'var(--text-on-dark)', padding: mobile ? '56px var(--container-pad)' : '88px var(--container-pad)' }}>
+      <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: mobile ? 32 : 64, alignItems: 'center' }}>
         <div>
           <span style={{ display: 'inline-block', marginBottom: 16 }}>
             <span style={{ fontFamily: UI, fontSize: 'var(--text-xs)', fontWeight: 'var(--fw-semibold)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-label)', color: 'var(--sv-on-dark-faint)' }}>About Vocavic</span>

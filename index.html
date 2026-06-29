@@ -35,6 +35,112 @@
       .vv-navlinks { display: none !important; }
     }
   </style>
+
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Vocavic",
+  "url": "https://vocavic.com",
+  "description": "Vocavic gives manufacturing plants structured operational memory through voice capture, automatic transcription, and a searchable, replayable event log."
+}
+  </script>
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Vocavic",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "On-premises",
+  "description": "Voice capture and structured operational memory for manufacturing shift handover, RCA, and Tier meetings. Operators speak a short note at shift end; Vocavic transcribes it, extracts structured fields, and files it into a searchable event log.",
+  "offers": {
+    "@type": "Offer",
+    "price": "7500",
+    "priceCurrency": "EUR",
+    "description": "On-premises license, one-time. Capture hardware quoted separately from EUR 3,500."
+  }
+}
+  </script>
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I reduce shift handover time in a manufacturing plant?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Most handover time gets lost re-explaining what happened, not deciding what to do about it. Vocavic captures the operator's note in their own words at shift end, structures it automatically, and hands the incoming shift a record instead of a verbal recap. In pilot, that cut handover from 15 minutes to 4."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What's a good way for operators to log issues without slowing down the line?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Speaking runs about 150 words per minute versus 35 typed. Voice capture lets an operator log a full note in the time it takes to type two sentences, without stepping away from the line."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is there voice-to-text software for factory floor shift notes?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Vocavic records a short spoken note, transcribes it, and extracts structured fields — machine, component, reason, action — automatically, so the operator never has to type or fill out a form."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I make tribal knowledge from operators searchable instead of lost at shift change?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Every spoken note becomes a structured, tagged record in a searchable log. Instead of living in one operator's memory until 6am, it's available to the next shift, the RCA engineer, and the Tier meeting."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is there an on-premise alternative to cloud-based shift logging software?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes — Vocavic runs on-premises by default. Transcripts and audio stay inside your network rather than a third-party cloud."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much does an on-prem voice capture system for a factory cost?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The Vocavic license starts from €7,500 (≈ $8,200 USD), one-time. Capture hardware — an edge device and mics — is quoted separately, from €3,500, sized to your lines."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What's the best way to document recurring issues for root cause analysis on the floor?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Vocavic tags and timestamps every note, so an issue flagged three times in one shift shows up automatically as a repeated issue — instead of an RCA engineer piecing it together after the fact."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What tools help capture operator notes when floor crews don't speak the local language well?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Vocavic's transcription is multilingual, so an operator can describe a problem in their own language and still produce a structured, readable note for the next shift."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "When is an on-premises solution better than a cloud-based one for manufacturing data?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "On-prem is the right call when operator audio and process details can't leave your network — most plants have IP, compliance, or customer-contract restrictions on where production data lives. It also removes any dependency on floor internet, which is often unreliable. We built Vocavic on-prem first because shift notes routinely mention machine settings and process tweaks — the kind of detail no plant wants sitting on a third-party server."
+      }
+    }
+  ]
+}
+  </script>
 </head>
 <body>
 <div id="root"></div>
@@ -111,7 +217,7 @@ function Nav({ onCta, tweaks }) {
       </span>
       <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
         <div style={{ display: 'flex', gap: 22 }} className="vv-navlinks">
-          {[['How it works','#how'],['Quotes','#quotes'],['Demo','#demo'],['Pricing','#pricing'],['About','#about']].map(([label, href]) => (
+          {[['How it works','#how'],['Quotes','#quotes'],['Demo','#demo'],['Pricing','#pricing'],['About','#about'],['FAQ','#faq']].map(([label, href]) => (
             <a key={label} href={href} style={{
               fontFamily: UI, fontSize: '0.875rem', fontWeight: 'var(--fw-medium)',
               color: 'var(--text-secondary)', textDecoration: 'none',
@@ -654,6 +760,91 @@ function About() {
 }
 
 // ─── Final CTA + Footer ────────────────────────────────────────────────────
+// ─── FAQ ──────────────────────────────────────────────────────────────────────────────
+const FAQ_ITEMS = [
+  {
+    q: "How do I reduce shift handover time in a manufacturing plant?",
+    a: "Most handover time gets lost re-explaining what happened, not deciding what to do about it. Vocavic captures the operator's note in their own words at shift end, structures it automatically, and hands the incoming shift a record instead of a verbal recap. In pilot, that cut handover from 15 minutes to 4."
+  },
+  {
+    q: "What's a good way for operators to log issues without slowing down the line?",
+    a: "Speaking runs about 150 words per minute versus 35 typed. Voice capture lets an operator log a full note in the time it takes to type two sentences, without stepping away from the line."
+  },
+  {
+    q: "Is there voice-to-text software for factory floor shift notes?",
+    a: "Yes. Vocavic records a short spoken note, transcribes it, and extracts structured fields — machine, component, reason, action — automatically, so the operator never has to type or fill out a form."
+  },
+  {
+    q: "How do I make tribal knowledge from operators searchable instead of lost at shift change?",
+    a: "Every spoken note becomes a structured, tagged record in a searchable log. Instead of living in one operator's memory until 6am, it's available to the next shift, the RCA engineer, and the Tier meeting."
+  },
+  {
+    q: "Is there an on-premise alternative to cloud-based shift logging software?",
+    a: "Yes — Vocavic runs on-premises by default. Transcripts and audio stay inside your network rather than a third-party cloud."
+  },
+  {
+    q: "How much does an on-prem voice capture system for a factory cost?",
+    a: "The Vocavic license starts from €7,500 (≈ $8,200 USD), one-time. Capture hardware — an edge device and mics — is quoted separately, from €3,500, sized to your lines."
+  },
+  {
+    q: "What's the best way to document recurring issues for root cause analysis on the floor?",
+    a: "Vocavic tags and timestamps every note, so an issue flagged three times in one shift shows up automatically as a repeated issue — instead of an RCA engineer piecing it together after the fact."
+  },
+  {
+    q: "What tools help capture operator notes when floor crews don't speak the local language well?",
+    a: "Vocavic's transcription is multilingual, so an operator can describe a problem in their own language and still produce a structured, readable note for the next shift."
+  },
+  {
+    q: "When is an on-premises solution better than a cloud-based one for manufacturing data?",
+    a: "On-prem is the right call when operator audio and process details can't leave your network — most plants have IP, compliance, or customer-contract restrictions on where production data lives. It also removes any dependency on floor internet, which is often unreliable. We built Vocavic on-prem first because shift notes routinely mention machine settings and process tweaks — the kind of detail no plant wants sitting on a third-party server."
+  }
+];
+
+function FAQItem({ q, a, open, onToggle }) {
+  return (
+    <Card padding="0" style={{ overflow: 'hidden' }}>
+      <button
+        onClick={onToggle}
+        style={{
+          width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
+          padding: '18px 20px', background: 'transparent', border: 'none', cursor: 'pointer',
+          fontFamily: UI, fontSize: 'var(--text-base)', fontWeight: 'var(--fw-semibold)', color: 'var(--text-primary)', textAlign: 'left',
+        }}
+      >
+        <span>{q}</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sv-teal)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+          style={{ flexShrink: 0, transition: 'transform var(--dur-base) var(--ease-standard)', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </button>
+      {open && (
+        <div style={{ padding: '0 20px 20px' }}>
+          <p style={{ margin: 0, fontSize: 'var(--text-base)', lineHeight: 'var(--leading-normal)', color: 'var(--text-secondary)' }}>{a}</p>
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function FAQSection() {
+  const [openIdx, setOpenIdx] = useState(0);
+  return (
+    <section id="faq" style={{ padding: '0 var(--container-pad) 96px', maxWidth: 760, margin: '0 auto' }}>
+      <div style={{ textAlign: 'center', marginBottom: 36 }}>
+        <Eyebrow>Questions plant teams ask</Eyebrow>
+        <h2 style={{ fontFamily: DISPLAY, fontWeight: 'var(--fw-black)', fontSize: 'clamp(1.8rem, 3vw, var(--text-display-md))', lineHeight: 'var(--leading-tight)', marginTop: 12 }}>
+          Straight answers, no sales call required
+        </h2>
+      </div>
+      <div style={{ display: 'grid', gap: 12 }}>
+        {FAQ_ITEMS.map((item, i) => (
+          <FAQItem key={item.q} q={item.q} a={item.a} open={openIdx === i} onToggle={() => setOpenIdx(openIdx === i ? -1 : i)} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function Footer({ onCta, tweaks }) {
   return (
     <footer>
@@ -749,6 +940,7 @@ function App() {
       <ProductTour />
       <Pricing onCta={bookCall} tweaks={tweaks} />
       <About />
+      <FAQSection />
       <Footer onCta={bookCall} tweaks={tweaks} />
       <TweaksPanel tweaks={tweaks} onChange={handleTweak} visible={tweaksVisible} />
     </>

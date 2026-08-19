@@ -53,12 +53,22 @@
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "On-premises",
   "description": "Voice capture and structured operational memory for manufacturing shift handover, RCA, and Tier meetings. Operators speak a short note at shift end; Vocavic transcribes it, extracts structured fields, and files it into a searchable event log.",
-  "offers": {
-    "@type": "Offer",
-    "price": "7500",
-    "priceCurrency": "EUR",
-    "description": "On-premises license, one-time. Capture hardware quoted separately from EUR 3,500."
-  }
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "Cloud",
+      "price": "150",
+      "priceCurrency": "EUR",
+      "description": "Cloud-hosted, 10,000 minutes/month included. Starting from EUR 150/month."
+    },
+    {
+      "@type": "Offer",
+      "name": "On-premises",
+      "price": "7500",
+      "priceCurrency": "EUR",
+      "description": "On-premises license, one-time. Capture hardware quoted separately from EUR 3,500."
+    }
+  ]
 }
   </script>
   <script type="application/ld+json">
@@ -103,7 +113,7 @@
       "name": "Is there an on-premise alternative to cloud-based shift logging software?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes — Vocavic runs on-premises by default. Transcripts and audio stay inside your network rather than a third-party cloud."
+        "text": "Yes — Vocavic is available both as a cloud service and as an on-premises deployment. Cloud is faster to set up (no hardware needed). On-premises is the right choice when operator audio and process details can't leave your network — most plants with IP, compliance, or customer-contract restrictions on production data prefer it. Both options use the same product."
       }
     },
     {
@@ -111,7 +121,7 @@
       "name": "How much does an on-prem voice capture system for a factory cost?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The Vocavic license starts from €7,500 (≈ $8,200 USD), one-time. Capture hardware — an edge device and mics — is quoted separately, from €3,500, sized to your lines."
+        "text": "Cloud starts from €150/month, which includes 10,000 minutes of voice capture — enough for most plants running one to two lines. On-premises is a one-time license from €7,500 (≈ $8,200 USD), with no ongoing usage fees. Capture hardware for the on-prem option — an edge device and mics — is quoted separately, from €3,500."
       }
     },
     {
@@ -641,81 +651,126 @@ function ProductTour() {
 // ─── Pricing ───────────────────────────────────────────────────────────────
 function Pricing({ onCta, tweaks }) {
   const mobile = useIsMobile();
-  const includes = [
+
+  const checkIcon = (color = 'var(--sv-teal)') => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 6L9 17l-5-5" />
+    </svg>
+  );
+
+  const cloudFeatures = [
     'Voice capture PWA for every operator',
     'Automatic field extraction & completeness scoring',
     'Live dashboard + AI shift summary',
     'Searchable, replayable event log',
     'Multilingual transcription',
-    'Runs entirely on your infrastructure',
+    'No hardware needed — any device, any browser',
+    'Managed hosting, updates & uptime',
   ];
+
+  const onPremFeatures = [
+    'Voice capture PWA for every operator',
+    'Automatic field extraction & completeness scoring',
+    'Live dashboard + AI shift summary',
+    'Searchable, replayable event log',
+    'Multilingual transcription',
+    'Runs on your infrastructure',
+    'No cloud dependency · works with floor internet down',
+  ];
+
   return (
     <section id="pricing" style={{ padding: '0 var(--container-pad) 96px', maxWidth: 'var(--container-max)', margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: 44 }}>
         <Eyebrow>Pricing</Eyebrow>
         <h2 style={{ fontFamily: DISPLAY, fontWeight: 'var(--fw-black)', fontSize: 'clamp(2rem, 3.5vw, var(--text-display-lg))', lineHeight: 'var(--leading-tight)', marginTop: 12, marginBottom: 14 }}>
-          Own your data. On your premises.
+          Two ways to deploy. Same structured memory.
         </h2>
-        <p style={{ fontSize: 'var(--text-lg)', color: 'var(--text-secondary)', lineHeight: 'var(--leading-normal)', maxWidth: '54ch', margin: '0 auto' }}>
-          Vocavic deploys on-prem, so operator audio and transcripts never leave your network. One transparent license — no per-seat metering, no usage surprises.
+        <p style={{ fontSize: 'var(--text-lg)', color: 'var(--text-secondary)', lineHeight: 'var(--leading-normal)', maxWidth: '56ch', margin: '0 auto' }}>
+          Start in the cloud for faster deployment. Move to on-premises if data residency requires it. Both give your plant the same capture layer.
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1.15fr 0.85fr', gap: 20, alignItems: 'stretch', maxWidth: 980, margin: '0 auto' }}>
-        {/* Main price card */}
-        <Card accentColor="var(--sv-teal)" accentSide="top" padding="var(--space-6)" style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-            <div style={{ display: 'grid', gap: 10 }}>
-              <div style={{ fontSize: 'var(--text-xs)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-label)', fontWeight: 'var(--fw-bold)', color: 'var(--text-secondary)' }}>On-premises solution</div>
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 10, flexWrap: 'wrap' }}>
-                <span style={{ fontSize: 'var(--text-base)', color: 'var(--text-secondary)', fontWeight: 'var(--fw-semibold)', paddingBottom: 8 }}>from</span>
-                <span style={{ fontFamily: DISPLAY, fontWeight: 'var(--fw-black)', fontSize: 'clamp(2.6rem, 4vw, 3.4rem)', lineHeight: 1.35, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>€7,500</span>
-              </div>
-              <div style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>≈ $8,200 USD · one-time license</div>
+      <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: 20, maxWidth: 980, margin: '0 auto' }}>
+        {/* Cloud card */}
+        <Card accentColor="var(--sv-teal)" accentSide="top" padding="var(--space-6)" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 8 }}>
+              <div style={{ fontSize: 'var(--text-xs)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-label)', fontWeight: 'var(--fw-bold)', color: 'var(--text-secondary)' }}>Cloud</div>
+              <Badge status="success" tone="soft">Available now</Badge>
             </div>
-            <Badge status="info" tone="soft">On-prem</Badge>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, flexWrap: 'wrap', marginBottom: 4 }}>
+              <span style={{ fontSize: 'var(--text-base)', color: 'var(--text-secondary)', fontWeight: 'var(--fw-semibold)', paddingBottom: 8 }}>from</span>
+              <span style={{ fontFamily: DISPLAY, fontWeight: 'var(--fw-black)', fontSize: 'clamp(2.4rem, 4vw, 3.2rem)', lineHeight: 1.35, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>€150</span>
+              <span style={{ fontSize: 'var(--text-base)', color: 'var(--text-secondary)', fontWeight: 'var(--fw-semibold)', paddingBottom: 8 }}>/month</span>
+            </div>
+            <div style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>10,000 minutes/month included</div>
           </div>
 
-          <div className="vv-hairline" style={{ paddingTop: 18, display: 'grid', gap: 12 }}>
-            {includes.map(item => (
+          <div className="vv-hairline" style={{ paddingTop: 16, display: 'grid', gap: 12, flex: 1 }}>
+            {cloudFeatures.map(item => (
               <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                <span style={{ flexShrink: 0, marginTop: 1, color: 'var(--sv-teal)' }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
-                </span>
+                <span style={{ flexShrink: 0, marginTop: 1, color: 'var(--sv-teal)' }}>{checkIcon()}</span>
                 <span style={{ fontSize: 'var(--text-base)', color: 'var(--text-primary)', lineHeight: 'var(--leading-snug)' }}>{item}</span>
               </div>
             ))}
           </div>
 
-          <div style={{ marginTop: 'auto', display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+          <div style={{ marginTop: 'auto', paddingTop: 8 }}>
             <Button variant="primary" size="lg" onClick={onCta}>{tweaks.ctaLabel} →</Button>
-            <span style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>Get a scoped quote for your lines.</span>
           </div>
         </Card>
 
-        {/* Side notes */}
-        <div style={{ display: 'grid', gap: 16, alignContent: 'start' }}>
-          <Card padding="var(--space-6)" style={{ display: 'grid', gap: 8 }}>
-            <div style={{ fontSize: 'var(--text-xs)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-label)', fontWeight: 'var(--fw-bold)', color: 'var(--text-secondary)' }}>Hardware</div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-              <span style={{ fontSize: 'var(--text-base)', color: 'var(--text-secondary)', fontWeight: 'var(--fw-semibold)' }}>from</span>
-              <span style={{ fontFamily: DISPLAY, fontWeight: 'var(--fw-black)', fontSize: '1.8rem', lineHeight: 1, color: 'var(--text-primary)' }}>€3,500</span>
-              <span style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>excluded</span>
+        {/* On-prem card */}
+        <Card accentColor="var(--sv-navy-a40)" accentSide="top" padding="var(--space-6)" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 8 }}>
+              <div style={{ fontSize: 'var(--text-xs)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-label)', fontWeight: 'var(--fw-bold)', color: 'var(--text-secondary)' }}>On-premises</div>
+              <Badge status="info" tone="soft">On-prem</Badge>
             </div>
-            <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', lineHeight: 'var(--leading-snug)' }}>
-              On-site capture hardware (edge device + mics) is quoted separately, sized to your floor.
-            </p>
-          </Card>
-          <Card padding="var(--space-6)" style={{ background: 'var(--sv-teal-a06)', display: 'grid', gap: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <StatusDot status="info" size={8} />
-              <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--fw-bold)' }}>What's not here</span>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, flexWrap: 'wrap', marginBottom: 4 }}>
+              <span style={{ fontSize: 'var(--text-base)', color: 'var(--text-secondary)', fontWeight: 'var(--fw-semibold)', paddingBottom: 8 }}>from</span>
+              <span style={{ fontFamily: DISPLAY, fontWeight: 'var(--fw-black)', fontSize: 'clamp(2.4rem, 4vw, 3.2rem)', lineHeight: 1.35, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>€7,500</span>
             </div>
-            <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', lineHeight: 'var(--leading-snug)' }}>
-              No per-seat fees. No cloud egress. No usage metering. Your data stays inside your network.
-            </p>
-          </Card>
-        </div>
+            <div style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>≈ $8,200 USD · one-time · unlimited minutes</div>
+          </div>
+
+          <div className="vv-hairline" style={{ paddingTop: 16, display: 'grid', gap: 12, flex: 1 }}>
+            {onPremFeatures.map(item => (
+              <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                <span style={{ flexShrink: 0, marginTop: 1, color: 'var(--sv-teal)' }}>{checkIcon()}</span>
+                <span style={{ fontSize: 'var(--text-base)', color: 'var(--text-primary)', lineHeight: 'var(--leading-snug)' }}>{item}</span>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ marginTop: 'auto', paddingTop: 8 }}>
+            <Button variant="secondary" size="lg" onClick={onCta}>{tweaks.ctaLabel} →</Button>
+          </div>
+        </Card>
+      </div>
+
+      {/* Notes row */}
+      <div style={{ maxWidth: 980, margin: '16px auto 0', display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: 16 }}>
+        <Card padding="var(--space-4)" style={{ background: 'var(--sv-teal-a06)', display: 'grid', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <StatusDot status="info" size={8} />
+            <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--fw-bold)' }}>Cloud usage</span>
+          </div>
+          <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', lineHeight: 'var(--leading-snug)' }}>
+            10,000 minutes covers most plants running one to two lines. Additional usage billed per minute — ask for a quote sized to your shifts.
+          </p>
+        </Card>
+        <Card padding="var(--space-4)" style={{ display: 'grid', gap: 8 }}>
+          <div style={{ fontSize: 'var(--text-xs)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-label)', fontWeight: 'var(--fw-bold)', color: 'var(--text-secondary)' }}>Hardware (on-prem only)</div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+            <span style={{ fontSize: 'var(--text-base)', color: 'var(--text-secondary)', fontWeight: 'var(--fw-semibold)' }}>from</span>
+            <span style={{ fontFamily: DISPLAY, fontWeight: 'var(--fw-black)', fontSize: '1.8rem', lineHeight: 1, color: 'var(--text-primary)' }}>€3,500</span>
+            <span style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>excluded</span>
+          </div>
+          <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', lineHeight: 'var(--leading-snug)' }}>
+            On-site capture hardware (edge device + mics) quoted separately, sized to your floor.
+          </p>
+        </Card>
       </div>
     </section>
   );
@@ -780,11 +835,11 @@ const FAQ_ITEMS = [
   },
   {
     q: "Is there an on-premise alternative to cloud-based shift logging software?",
-    a: "Yes — Vocavic runs on-premises by default. Transcripts and audio stay inside your network rather than a third-party cloud."
+    a: "Yes — Vocavic is available both as a cloud service and as an on-premises deployment. Cloud is faster to set up (no hardware needed). On-premises is the right choice when operator audio and process details can't leave your network — most plants with IP, compliance, or customer-contract restrictions prefer it. Both options use the same product."
   },
   {
     q: "How much does an on-prem voice capture system for a factory cost?",
-    a: "The Vocavic license starts from €7,500 (≈ $8,200 USD), one-time. Capture hardware — an edge device and mics — is quoted separately, from €3,500, sized to your lines."
+    a: "Cloud starts from €150/month, which includes 10,000 minutes of voice capture — enough for most plants running one to two lines. On-premises is a one-time license from €7,500 (≈ $8,200 USD), with no ongoing usage fees. Capture hardware for on-prem — an edge device and mics — is quoted separately, from €3,500."
   },
   {
     q: "What's the best way to document recurring issues for root cause analysis on the floor?",
